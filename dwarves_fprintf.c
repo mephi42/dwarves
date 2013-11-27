@@ -619,6 +619,19 @@ static size_t type__fprintf(struct tag *type, const struct cu *cu,
 			printed += fprintf(fp, " */ ");
 	}
 
+	if (conf->expand_typedefs) {
+		while (tag__is_typedef(type)) {
+			struct tag *next = cu__type(cu, type->type);
+			if (next == NULL) {
+				break;
+			}
+			if (tag__has_namespace(next) && tag__namespace(next)->name == 0) {
+				break;
+			}
+			type = next;
+		}
+	}
+
 	if (tag__is_struct(type) || tag__is_union(type) ||
 	    tag__is_enumeration(type)) {
 		tconf = *conf;
@@ -644,6 +657,13 @@ static size_t type__fprintf(struct tag *type, const struct cu *cu,
 							  cu, name, 0, 1,
 							  conf->type_spacing,
 							  conf, fp);
+				break;
+			}
+			if (conf->expand_typedefs) {
+				/* Handle pointers to typedefs. Double pointers will look ugly,
+				 * but that is still better than nothing. */
+				printed += type__fprintf(ptype, cu, "", conf, fp);
+				printed += fprintf(fp, " *%s", name);
 				break;
 			}
 		}

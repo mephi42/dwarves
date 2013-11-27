@@ -742,6 +742,7 @@ ARGP_PROGRAM_VERSION_HOOK_DEF = dwarves_print_version;
 #define ARGP_first_obj_only	   303
 #define ARGP_classes_as_structs	   304
 #define ARGP_hex_fmt		   305
+#define ARGP_expand_typedefs		   306
 
 static const struct argp_option pahole__options[] = {
 	{
@@ -965,6 +966,11 @@ static const struct argp_option pahole__options[] = {
 		.doc  = "Print offsets and sizes in hexadecimal",
 	},
 	{
+		.name = "expand_typedefs",
+		.key  = ARGP_expand_typedefs,
+		.doc  = "Same as -E, but only expands typedefs",
+	},
+	{
 		.name = NULL,
 	}
 };
@@ -1043,6 +1049,8 @@ static error_t pahole__options_parser(int key, char *arg,
 		conf.classes_as_structs = 1;		break;
 	case ARGP_hex_fmt:
 		conf.hex_fmt = 1;			break;
+	case ARGP_expand_typedefs:
+		conf.expand_typedefs = 1;			break;
 	default:
 		return ARGP_ERR_UNKNOWN;
 	}
